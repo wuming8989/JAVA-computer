@@ -1,1 +1,2 @@
-# JAVA-computer
+Java的小计算器
+菜狗勿喷

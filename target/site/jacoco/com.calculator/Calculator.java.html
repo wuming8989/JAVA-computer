@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Calculator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">computer</a> &gt; <a href="index.source.html" class="el_package">com.calculator</a> &gt; <span class="el_source">Calculator.java</span></div><h1>Calculator.java</h1><pre class="source lang-java linenums">package com.calculator;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Calculator extends JFrame implements Runnable{
+    public static void main(String[] args) {
+<span class="nc" id="L15">        SwingUtilities.invokeLater(new Calculator());</span>
+<span class="nc" id="L16">    }</span>
+    private JButton m, MS, a2Button, zf, a1Button, a0Button, a3Button, d, jian, a1X;
+    private JButton jia, dy, cheng, quyu, a6Button, a5Button, a4Button, MC, MR;
+    private JButton chu, a9Button, a8Button, a7Button, CE, back, C, sqrt;
+    private JTextField display;
+    private JPanel mainPanel;
+    //M功能储存字符串
+    private String memoryValue;
+
+<span class="fc" id="L25">    Calculator(){</span>
+        // 初始化主面板
+<span class="fc" id="L27">        mainPanel = new JPanel(new BorderLayout());</span>
+
+        // 创建显示框
+<span class="fc" id="L30">        display = new JTextField();</span>
+<span class="fc" id="L31">        display.setFont(new Font(&quot;Arial&quot;, Font.PLAIN, 24));</span>
+<span class="fc" id="L32">        display.setEditable(false);</span>
+<span class="fc" id="L33">        mainPanel.add(display, BorderLayout.NORTH);</span>
+        
+        // 创建按钮面板
+<span class="fc" id="L36">        JPanel buttonPanel = new JPanel(new GridLayout(5, 5, 5, 5));</span>
+        
+        // 创建按钮
+<span class="fc" id="L39">        a7Button = new JButton(&quot;7&quot;);</span>
+<span class="fc" id="L40">        a8Button = new JButton(&quot;8&quot;);</span>
+<span class="fc" id="L41">        a9Button = new JButton(&quot;9&quot;);</span>
+<span class="fc" id="L42">        chu = new JButton(&quot;/&quot;);</span>
+<span class="fc" id="L43">        CE = new JButton(&quot;CE&quot;);</span>
+        
+<span class="fc" id="L45">        a4Button = new JButton(&quot;4&quot;);</span>
+<span class="fc" id="L46">        a5Button = new JButton(&quot;5&quot;);</span>
+<span class="fc" id="L47">        a6Button = new JButton(&quot;6&quot;);</span>
+<span class="fc" id="L48">        cheng = new JButton(&quot;*&quot;);</span>
+<span class="fc" id="L49">        back = new JButton(&quot;←&quot;);</span>
+        
+<span class="fc" id="L51">        a1Button = new JButton(&quot;1&quot;);</span>
+<span class="fc" id="L52">        a2Button = new JButton(&quot;2&quot;);</span>
+<span class="fc" id="L53">        a3Button = new JButton(&quot;3&quot;);</span>
+<span class="fc" id="L54">        jian = new JButton(&quot;-&quot;);</span>
+<span class="fc" id="L55">        C = new JButton(&quot;C&quot;);</span>
+        
+<span class="fc" id="L57">        a0Button = new JButton(&quot;0&quot;);</span>
+<span class="fc" id="L58">        d = new JButton(&quot;.&quot;);</span>
+<span class="fc" id="L59">        dy = new JButton(&quot;=&quot;);</span>
+<span class="fc" id="L60">        jia = new JButton(&quot;+&quot;);</span>
+<span class="fc" id="L61">        sqrt = new JButton(&quot;√&quot;);</span>
+        
+<span class="fc" id="L63">        quyu = new JButton(&quot;%&quot;);</span>
+<span class="fc" id="L64">        a1X = new JButton(&quot;1/x&quot;);</span>
+<span class="fc" id="L65">        zf = new JButton(&quot;±&quot;);</span>
+<span class="fc" id="L66">        MC = new JButton(&quot;MC&quot;);</span>
+<span class="fc" id="L67">        MR = new JButton(&quot;MR&quot;);</span>
+<span class="fc" id="L68">        MS = new JButton(&quot;MS&quot;);</span>
+<span class="fc" id="L69">        m = new JButton(&quot;M+&quot;);</span>
+        
+        // 添加按钮到面板
+<span class="fc" id="L72">        buttonPanel.add(a7Button);</span>
+<span class="fc" id="L73">        buttonPanel.add(a8Button);</span>
+<span class="fc" id="L74">        buttonPanel.add(a9Button);</span>
+<span class="fc" id="L75">        buttonPanel.add(chu);</span>
+<span class="fc" id="L76">        buttonPanel.add(CE);</span>
+        
+<span class="fc" id="L78">        buttonPanel.add(a4Button);</span>
+<span class="fc" id="L79">        buttonPanel.add(a5Button);</span>
+<span class="fc" id="L80">        buttonPanel.add(a6Button);</span>
+<span class="fc" id="L81">        buttonPanel.add(cheng);</span>
+<span class="fc" id="L82">        buttonPanel.add(back);</span>
+        
+<span class="fc" id="L84">        buttonPanel.add(a1Button);</span>
+<span class="fc" id="L85">        buttonPanel.add(a2Button);</span>
+<span class="fc" id="L86">        buttonPanel.add(a3Button);</span>
+<span class="fc" id="L87">        buttonPanel.add(jian);</span>
+<span class="fc" id="L88">        buttonPanel.add(C);</span>
+        
+<span class="fc" id="L90">        buttonPanel.add(a0Button);</span>
+<span class="fc" id="L91">        buttonPanel.add(d);</span>
+<span class="fc" id="L92">        buttonPanel.add(dy);</span>
+<span class="fc" id="L93">        buttonPanel.add(jia);</span>
+<span class="fc" id="L94">        buttonPanel.add(sqrt);</span>
+        
+<span class="fc" id="L96">        buttonPanel.add(quyu);</span>
+<span class="fc" id="L97">        buttonPanel.add(a1X);</span>
+<span class="fc" id="L98">        buttonPanel.add(zf);</span>
+<span class="fc" id="L99">        buttonPanel.add(MC);</span>
+<span class="fc" id="L100">        buttonPanel.add(MR);</span>
+        
+<span class="fc" id="L102">        mainPanel.add(buttonPanel, BorderLayout.CENTER);</span>
+
+        // 设置窗口属性
+<span class="fc" id="L105">        this.setContentPane(mainPanel);</span>
+<span class="fc" id="L106">        this.setTitle(&quot;计算器&quot;);</span>
+<span class="fc" id="L107">        this.setSize(600,400);</span>
+<span class="fc" id="L108">        this.setLocationRelativeTo(null);</span>
+<span class="fc" id="L109">        this.setResizable(false);</span>
+<span class="fc" id="L110">        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);</span>
+        
+        // 创建菜单
+<span class="fc" id="L113">        JMenuBar cd = new JMenuBar();</span>
+<span class="fc" id="L114">        JMenu bianji = new JMenu(&quot;编辑&quot;);</span>
+<span class="fc" id="L115">        JMenu chakan = new JMenu(&quot;查看&quot;);</span>
+<span class="fc" id="L116">        JMenu bangzhu = new JMenu(&quot;帮助&quot;);</span>
+<span class="fc" id="L117">        cd.add(bianji);</span>
+<span class="fc" id="L118">        cd.add(chakan);</span>
+<span class="fc" id="L119">        cd.add(bangzhu);</span>
+<span class="fc" id="L120">        JMenuItem fuzi = new JMenuItem(&quot;复制(c)&quot;);</span>
+        //绑定快捷键
+<span class="fc" id="L122">        fuzi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));</span>
+<span class="fc" id="L123">        fuzi.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L126">                System.out.println(&quot;复制了&quot;);</span>
+<span class="nc" id="L127">                String text = display.getText();</span>
+                // 获取系统剪贴板
+<span class="nc" id="L129">                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();</span>
+                // 创建要复制的内容
+<span class="nc" id="L131">                StringSelection selection = new StringSelection(text);</span>
+                // 将内容设置到剪贴板
+<span class="nc" id="L133">                clipboard.setContents(selection, null);</span>
+<span class="nc" id="L134">            }</span>
+        });
+<span class="fc" id="L136">        JMenuItem zhantie = new JMenuItem(&quot;粘贴(v)&quot;);</span>
+<span class="fc" id="L137">        zhantie.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));</span>
+<span class="fc" id="L138">        zhantie.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L141">                System.out.println(&quot;粘贴了&quot;);</span>
+                try {
+<span class="nc" id="L143">                    String text = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);</span>
+<span class="nc" id="L144">                    display.setText(text);</span>
+<span class="nc" id="L145">                } catch (Exception ex) {</span>
+<span class="nc" id="L146">                    System.out.println(&quot;粘贴失败&quot;);</span>
+<span class="nc" id="L147">                }</span>
+<span class="nc" id="L148">            }</span>
+        });
+<span class="fc" id="L150">        bianji.add(fuzi);</span>
+<span class="fc" id="L151">        bianji.add(zhantie);</span>
+<span class="fc" id="L152">        this.setJMenuBar(cd);</span>
+        //显示界面
+<span class="fc" id="L154">        this.setVisible(true);</span>
+        //窗口关闭监听器
+<span class="fc" id="L156">        this.addWindowListener(new WindowAdapter() {</span>
+            @Override
+            public void windowClosing(WindowEvent e) {
+<span class="nc" id="L159">                System.exit(0);</span>
+<span class="nc" id="L160">            }</span>
+        });
+<span class="fc" id="L162">    }</span>
+
+    @Override
+    public void run() {
+        //按钮监听
+<span class="nc" id="L167">        a0Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L170">                pdone(&quot;0&quot;);</span>
+<span class="nc" id="L171">            }</span>
+        });
+<span class="nc" id="L173">        a1Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L176">                pdone(&quot;1&quot;);</span>
+<span class="nc" id="L177">            }</span>
+        });
+<span class="nc" id="L179">        a2Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L182">                pdone(&quot;2&quot;);</span>
+<span class="nc" id="L183">            }</span>
+        });
+<span class="nc" id="L185">        a3Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L188">                pdone(&quot;3&quot;);</span>
+<span class="nc" id="L189">            }</span>
+        });
+<span class="nc" id="L191">        a4Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L194">                pdone(&quot;4&quot;);</span>
+<span class="nc" id="L195">            }</span>
+        });
+<span class="nc" id="L197">        a5Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L200">                pdone(&quot;5&quot;);</span>
+<span class="nc" id="L201">            }</span>
+        });
+<span class="nc" id="L203">        a6Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L206">                pdone(&quot;6&quot;);</span>
+<span class="nc" id="L207">            }</span>
+        });
+<span class="nc" id="L209">        a7Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L212">                pdone(&quot;7&quot;);</span>
+<span class="nc" id="L213">            }</span>
+        });
+<span class="nc" id="L215">        a8Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L218">                pdone(&quot;8&quot;);</span>
+<span class="nc" id="L219">            }</span>
+        });
+<span class="nc" id="L221">        a9Button.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L224">                pdone(&quot;9&quot;);</span>
+<span class="nc" id="L225">            }</span>
+        });
+<span class="nc" id="L227">        d.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L230">                pdone(&quot;.&quot;);</span>
+<span class="nc" id="L231">            }</span>
+        });
+<span class="nc" id="L233">        jia.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L236">                pdone(&quot;+&quot;);</span>
+<span class="nc" id="L237">            }</span>
+        });
+<span class="nc" id="L239">        jian.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L242">                pdone(&quot;-&quot;);</span>
+<span class="nc" id="L243">            }</span>
+        });
+<span class="nc" id="L245">        cheng.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L248">                pdone(&quot;*&quot;);</span>
+<span class="nc" id="L249">            }</span>
+        });
+<span class="nc" id="L251">        chu.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L254">                pdone(&quot;/&quot;);</span>
+<span class="nc" id="L255">            }</span>
+        });
+<span class="nc" id="L257">        quyu.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L260">                pdone(&quot;%&quot;);</span>
+<span class="nc" id="L261">            }</span>
+        });
+<span class="nc" id="L263">        back.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L266">                String text = display.getText();</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                if (text.length() &gt; 0) {</span>
+<span class="nc" id="L268">                    display.setText(text.substring(0, text.length()-1));</span>
+                }
+<span class="nc" id="L270">            }</span>
+        });
+<span class="nc" id="L272">        C.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L275">                display.setText(&quot;&quot;);</span>
+<span class="nc" id="L276">            }</span>
+        });
+<span class="nc" id="L278">        CE.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L281">                String text = display.getText();</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">                for (int i = text.length()-1; i &gt;=0 ; i--) {</span>
+<span class="nc bnc" id="L283" title="All 10 branches missed.">                    if (text.charAt(i)=='+'||text.charAt(i)=='-'||text.charAt(i)=='*'||text.charAt(i)=='/'||text.charAt(i)=='%'){</span>
+<span class="nc" id="L284">                        display.setText(text.substring(0,i+1));</span>
+<span class="nc" id="L285">                        break;</span>
+                    }
+                }
+<span class="nc" id="L288">            }</span>
+        });
+<span class="nc" id="L290">        dy.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L293">                display.setText(String.valueOf(calculate()));</span>
+<span class="nc" id="L294">            }</span>
+        });
+<span class="nc" id="L296">        a1X.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L299">                double number = calculate();</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">                if (number != 0) {</span>
+<span class="nc" id="L301">                    double reciprocal = 1.0 / number;</span>
+<span class="nc" id="L302">                    display.setText(String.valueOf(reciprocal));</span>
+<span class="nc" id="L303">                } else {</span>
+<span class="nc" id="L304">                    display.setText(&quot;错误：除以零&quot;);</span>
+                }
+<span class="nc" id="L306">            }</span>
+        });
+<span class="nc" id="L308">        sqrt.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L311">                double number = calculate();</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">                if (number &gt;= 0) {</span>
+<span class="nc" id="L313">                    display.setText(String.valueOf(Math.sqrt(number)));</span>
+                } else {
+<span class="nc" id="L315">                    display.setText(&quot;错误：负数开方&quot;);</span>
+                }
+<span class="nc" id="L317">            }</span>
+        });
+<span class="nc" id="L319">        zf.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L322">                double number = calculate();</span>
+<span class="nc" id="L323">                display.setText(String.valueOf(-number));</span>
+<span class="nc" id="L324">            }</span>
+        });
+<span class="nc" id="L326">        MC.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L329">                memoryValue = &quot;&quot;;</span>
+<span class="nc" id="L330">            }</span>
+        });
+<span class="nc" id="L332">        MR.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L335" title="All 4 branches missed.">                if (memoryValue != null &amp;&amp; !memoryValue.isEmpty()) {</span>
+<span class="nc" id="L336">                    display.setText(memoryValue);</span>
+                }
+<span class="nc" id="L338">            }</span>
+        });
+<span class="nc" id="L340">        MS.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L343">                memoryValue = display.getText();</span>
+<span class="nc" id="L344">            }</span>
+        });
+<span class="nc" id="L346">        m.addActionListener(new ActionListener() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+<span class="nc" id="L350">                    double currentValue = calculate();</span>
+<span class="nc bnc" id="L351" title="All 4 branches missed.">                    double memValue = memoryValue != null &amp;&amp; !memoryValue.isEmpty() ?</span>
+<span class="nc" id="L352">                        Double.parseDouble(memoryValue) : 0;</span>
+<span class="nc" id="L353">                    double sum = currentValue + memValue;</span>
+<span class="nc" id="L354">                    memoryValue = String.valueOf(sum);</span>
+<span class="nc" id="L355">                    display.setText(String.valueOf(sum));</span>
+<span class="nc" id="L356">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L357">                    display.setText(&quot;错误：无效数字&quot;);</span>
+<span class="nc" id="L358">                }</span>
+<span class="nc" id="L359">            }</span>
+        });
+<span class="nc" id="L361">    }</span>
+
+    void pdone(String text) {
+<span class="fc bfc" id="L364" title="All 2 branches covered.">        if (display.getText().isEmpty()) {</span>
+<span class="fc" id="L365">            display.setText(text);</span>
+        } else {
+<span class="fc" id="L367">            display.setText(display.getText() + text);</span>
+        }
+<span class="fc" id="L369">    }</span>
+
+    ArrayList&lt;String&gt; parseExpression(){
+        //分割输入字符
+<span class="fc" id="L373">        String text = display.getText();</span>
+<span class="fc" id="L374">        Pattern pattern = Pattern.compile(&quot;\\d+\\.?\\d*|[\\+\\-\\*\\/\\%]&quot;);</span>
+<span class="fc" id="L375">        Matcher matcher = pattern.matcher(text);</span>
+<span class="fc" id="L376">        ArrayList&lt;String&gt; result = new ArrayList&lt;&gt;();</span>
+        //添加到结果列表
+<span class="fc bfc" id="L378" title="All 2 branches covered.">        while (matcher.find()) {</span>
+<span class="fc" id="L379">            result.add(matcher.group());</span>
+        }
+<span class="fc" id="L381">        return result;</span>
+    }
+
+    double calculate(){
+<span class="fc" id="L385">        double sum = 0;</span>
+<span class="fc" id="L386">        ArrayList&lt;String&gt; tokens = parseExpression();</span>
+        //判断有无运算符
+<span class="fc bfc" id="L388" title="All 10 branches covered.">        if (!tokens.contains(&quot;*&quot;)&amp;&amp;!tokens.contains(&quot;/&quot;)&amp;&amp;!tokens.contains(&quot;%&quot;)&amp;&amp;!tokens.contains(&quot;+&quot;)&amp;&amp;!tokens.contains(&quot;-&quot;)){</span>
+            try {
+<span class="fc" id="L390">                return Double.parseDouble(display.getText());</span>
+<span class="fc" id="L391">            } catch (NumberFormatException e) {</span>
+<span class="fc" id="L392">                return 0;</span>
+            }
+        }
+        //先乘除
+<span class="fc bfc" id="L396" title="All 6 branches covered.">        while (tokens.contains(&quot;*&quot;)||tokens.contains(&quot;/&quot;)||tokens.contains(&quot;%&quot;)){</span>
+<span class="fc" id="L397">            int i = tokens.indexOf(&quot;*&quot;);</span>
+<span class="fc" id="L398">            int j = tokens.indexOf(&quot;/&quot;);</span>
+<span class="fc" id="L399">            int q = tokens.indexOf(&quot;%&quot;);</span>
+
+<span class="fc" id="L401">            int a = 0;</span>
+            //如果一个为-1 则直接选择另一个
+<span class="pc bpc" id="L403" title="4 of 10 branches missed.">            if (i != -1 &amp;&amp; (j == -1 || i &lt; j) &amp;&amp; (q == -1 || i &lt; q)) {</span>
+<span class="fc" id="L404">                a = i;</span>
+<span class="pc bpc" id="L405" title="6 of 10 branches missed.">            } else if (j != -1 &amp;&amp; (i == -1 || j &lt; i) &amp;&amp; (q == -1 || j &lt; q)) {</span>
+<span class="fc" id="L406">                a = j;</span>
+<span class="pc bpc" id="L407" title="1 of 2 branches missed.">            } else if (q != -1) {</span>
+<span class="fc" id="L408">                a = q;</span>
+            }
+            double v;
+<span class="fc bfc" id="L411" title="All 2 branches covered.">            if (tokens.get(a).equals(&quot;*&quot;)) {</span>
+<span class="fc" id="L412">                v = Double.parseDouble(tokens.get(a - 1)) * Double.parseDouble(tokens.get(a + 1));</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">            }else if (tokens.get(a).equals(&quot;/&quot;)){</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">                if (Double.parseDouble(tokens.get(a + 1))==0){</span>
+<span class="fc" id="L415">                    return Double.POSITIVE_INFINITY; // 处理除零错误</span>
+                }
+<span class="fc" id="L417">                v = Double.parseDouble(tokens.get(a - 1)) / Double.parseDouble(tokens.get(a + 1));</span>
+            }else {
+<span class="fc bfc" id="L419" title="All 2 branches covered.">                if (Double.parseDouble(tokens.get(a + 1))==0){</span>
+<span class="fc" id="L420">                    return Double.NaN; // 处理模零错误</span>
+                }
+<span class="fc" id="L422">                v = Double.parseDouble(tokens.get(a - 1)) % Double.parseDouble(tokens.get(a + 1));</span>
+            }
+<span class="fc" id="L424">            tokens.remove(a+1);</span>
+<span class="fc" id="L425">            tokens.set(a, String.valueOf(v));</span>
+<span class="fc" id="L426">            tokens.remove(a-1);</span>
+<span class="fc" id="L427">            sum=v;</span>
+<span class="fc" id="L428">        }</span>
+        //再加减
+<span class="fc bfc" id="L430" title="All 4 branches covered.">        while (tokens.contains(&quot;+&quot;)||tokens.contains(&quot;-&quot;)){</span>
+<span class="fc" id="L431">            int i = tokens.indexOf(&quot;+&quot;);</span>
+<span class="fc" id="L432">            int j = tokens.indexOf(&quot;-&quot;);</span>
+            int a;
+            //如果一个为-1 则直接选择另一个
+<span class="fc bfc" id="L435" title="All 2 branches covered.">            if (i == -1) {</span>
+<span class="fc" id="L436">                a = j;</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">            } else if (j == -1) {</span>
+<span class="fc" id="L438">                a = i;</span>
+            } else {
+<span class="fc bfc" id="L440" title="All 2 branches covered.">                a = i &gt; j ? j : i;</span>
+            }
+            double v;
+<span class="fc bfc" id="L443" title="All 2 branches covered.">            if (tokens.get(a).equals(&quot;+&quot;)) {</span>
+<span class="fc" id="L444">                v = Double.parseDouble(tokens.get(a - 1)) + Double.parseDouble(tokens.get(a + 1));</span>
+            }else {
+<span class="fc" id="L446">                v = Double.parseDouble(tokens.get(a - 1)) - Double.parseDouble(tokens.get(a + 1));</span>
+            }
+<span class="fc" id="L448">            tokens.remove(a+1);</span>
+<span class="fc" id="L449">            tokens.set(a, String.valueOf(v));</span>
+<span class="fc" id="L450">            tokens.remove(a-1);</span>
+<span class="fc" id="L451">            sum=v;</span>
+<span class="fc" id="L452">        }</span>
+<span class="fc" id="L453">        return sum;</span>
+    }
+
+    // 为测试提供访问display的方法
+    public String getDisplayText() {
+<span class="fc" id="L458">        return display.getText();</span>
+    }
+
+    // 为测试提供访问memoryValue的方法
+    public String getMemoryValue() {
+<span class="fc" id="L463">        return memoryValue;</span>
+    }
+
+    public void setMemoryValue(String value) {
+<span class="fc" id="L467">        this.memoryValue = value;</span>
+<span class="fc" id="L468">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
