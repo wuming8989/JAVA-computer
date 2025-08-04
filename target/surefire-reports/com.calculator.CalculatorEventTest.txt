@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.calculator.CalculatorEventTest
+-------------------------------------------------------------------------------
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.883 s -- in com.calculator.CalculatorEventTest
