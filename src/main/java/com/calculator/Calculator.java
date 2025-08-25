@@ -17,6 +17,8 @@ public class Calculator extends JFrame implements Runnable{
     private JButton m, MS, a2Button, zf, a1Button, a0Button, a3Button, d, jian, a1X;
     private JButton jia, dy, cheng, quyu, a6Button, a5Button, a4Button, MC, MR;
     private JButton chu, a9Button, a8Button, a7Button, CE, back, C, sqrt;
+    // 科学计算按钮
+    private JButton sin, cos, tan, log, ln, exp, pow, factorial, pi, e;
     private JTextField display;
     private JPanel mainPanel;
     //M功能储存字符串
@@ -33,7 +35,7 @@ public class Calculator extends JFrame implements Runnable{
         mainPanel.add(display, BorderLayout.NORTH);
         
         // 创建按钮面板
-        JPanel buttonPanel = new JPanel(new GridLayout(5, 5, 5, 5));
+        JPanel buttonPanel = new JPanel(new GridLayout(7, 5, 5, 5));
         
         // 创建按钮
         a7Button = new JButton("7");
@@ -67,6 +69,18 @@ public class Calculator extends JFrame implements Runnable{
         MR = new JButton("MR");
         MS = new JButton("MS");
         m = new JButton("M+");
+
+        // 创建科学计算按钮
+        sin = new JButton("sin");
+        cos = new JButton("cos");
+        tan = new JButton("tan");
+        log = new JButton("log");
+        ln = new JButton("ln");
+        exp = new JButton("exp");
+        pow = new JButton("x^y");
+        factorial = new JButton("n!");
+        pi = new JButton("π");
+        e = new JButton("e");
         
         // 添加按钮到面板
         buttonPanel.add(a7Button);
@@ -98,13 +112,27 @@ public class Calculator extends JFrame implements Runnable{
         buttonPanel.add(zf);
         buttonPanel.add(MC);
         buttonPanel.add(MR);
-        
+
+        // 添加科学计算按钮 - 第6行
+        buttonPanel.add(sin);
+        buttonPanel.add(cos);
+        buttonPanel.add(tan);
+        buttonPanel.add(log);
+        buttonPanel.add(ln);
+
+        // 添加科学计算按钮 - 第7行
+        buttonPanel.add(exp);
+        buttonPanel.add(pow);
+        buttonPanel.add(factorial);
+        buttonPanel.add(pi);
+        buttonPanel.add(e);
+
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
         // 设置窗口属性
         this.setContentPane(mainPanel);
-        this.setTitle("计算器");
-        this.setSize(600,400);
+        this.setTitle("科学计算器");
+        this.setSize(600,500);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -358,6 +386,103 @@ public class Calculator extends JFrame implements Runnable{
                 }
             }
         });
+
+        // 科学计算功能监听器
+        sin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double number = calculate();
+                double result = Math.sin(Math.toRadians(number));
+                display.setText(String.valueOf(result));
+            }
+        });
+
+        cos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double number = calculate();
+                double result = Math.cos(Math.toRadians(number));
+                display.setText(String.valueOf(result));
+            }
+        });
+
+        tan.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double number = calculate();
+                double result = Math.tan(Math.toRadians(number));
+                display.setText(String.valueOf(result));
+            }
+        });
+
+        log.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double number = calculate();
+                if (number > 0) {
+                    double result = Math.log10(number);
+                    display.setText(String.valueOf(result));
+                } else {
+                    display.setText("错误：对数的真数必须大于0");
+                }
+            }
+        });
+
+        ln.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double number = calculate();
+                if (number > 0) {
+                    double result = Math.log(number);
+                    display.setText(String.valueOf(result));
+                } else {
+                    display.setText("错误：自然对数的真数必须大于0");
+                }
+            }
+        });
+
+        exp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double number = calculate();
+                double result = Math.exp(number);
+                display.setText(String.valueOf(result));
+            }
+        });
+
+        pow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pdone("^");
+            }
+        });
+
+        factorial.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double number = calculate();
+                if (number >= 0 && number == Math.floor(number) && number <= 170) {
+                    long result = factorial((int)number);
+                    display.setText(String.valueOf(result));
+                } else {
+                    display.setText("错误：阶乘只适用于非负整数且不超过170");
+                }
+            }
+        });
+
+        pi.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                display.setText(String.valueOf(Math.PI));
+            }
+        });
+
+        e.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                display.setText(String.valueOf(Math.E));
+            }
+        });
     }
 
     void pdone(String text) {
@@ -371,7 +496,7 @@ public class Calculator extends JFrame implements Runnable{
     ArrayList<String> parseExpression(){
         //分割输入字符
         String text = display.getText();
-        Pattern pattern = Pattern.compile("\\d+\\.?\\d*|[\\+\\-\\*\\/\\%]");
+        Pattern pattern = Pattern.compile("\\d+\\.?\\d*|[\\+\\-\\*\\/\\%\\^]");
         Matcher matcher = pattern.matcher(text);
         ArrayList<String> result = new ArrayList<>();
         //添加到结果列表
@@ -385,12 +510,24 @@ public class Calculator extends JFrame implements Runnable{
         double sum = 0;
         ArrayList<String> tokens = parseExpression();
         //判断有无运算符
-        if (!tokens.contains("*")&&!tokens.contains("/")&&!tokens.contains("%")&&!tokens.contains("+")&&!tokens.contains("-")){
+        if (!tokens.contains("*")&&!tokens.contains("/")&&!tokens.contains("%")&&!tokens.contains("+")&&!tokens.contains("-")&&!tokens.contains("^")){
             try {
                 return Double.parseDouble(display.getText());
             } catch (NumberFormatException e) {
                 return 0;
             }
+        }
+
+        //先处理幂运算（优先级最高）
+        while (tokens.contains("^")){
+            int powIndex = tokens.indexOf("^");
+            double base = Double.parseDouble(tokens.get(powIndex - 1));
+            double exponent = Double.parseDouble(tokens.get(powIndex + 1));
+            double result = Math.pow(base, exponent);
+            tokens.remove(powIndex + 1);
+            tokens.set(powIndex, String.valueOf(result));
+            tokens.remove(powIndex - 1);
+            sum = result;
         }
         //先乘除
         while (tokens.contains("*")||tokens.contains("/")||tokens.contains("%")){
@@ -465,6 +602,16 @@ public class Calculator extends JFrame implements Runnable{
 
     public void setMemoryValue(String value) {
         this.memoryValue = value;
+    }
+
+    // 阶乘计算方法
+    private long factorial(int n) {
+        if (n <= 1) return 1;
+        long result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
     }
 
 }
